@@ -13,19 +13,35 @@ export default function App() {
     {
       id: 2,
       task: 'Second task',
-      completed: true
+      completed: false
     }
   ]);
 
   const ListItem = ({ todo }) => {
     return (
       <View style={styles.listItem}>
-        <View>
-          <Text>{todo?.task}</Text>
+        <View style={{ flex: 1 }}>
+          <Text style={{
+            fontWeight: 'bold',
+            fontSize: 15,
+            color: Colors.primary,
+            textDecorationLine: todo?.completed ? 'line-through' : 'none'
+          }}>
+            {todo?.task}</Text>
         </View>
+        {
+          !todo?.completed && (
+            <TouchableOpacity style={[styles.actionIcon]}>
+              <Icon name='done' size={20} color={Colors.white} />
+            </TouchableOpacity>
+          )
+        }
+        <TouchableOpacity style={[styles.actionIcon, { backgroundColor: 'red' }]}>
+          <Icon name='delete' size={25} />
+        </TouchableOpacity>
       </View>
-    )
-  }
+    );
+  };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: Colors.white }}>
@@ -61,7 +77,18 @@ const Colors = {
 };
 
 const styles = StyleSheet.create({
+  actionIcon: {
+    height: 25,
+    width: 25,
+    backgroundColor: 'green',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 5,
+    borderRadius: 3
+  },
+
   header: {
+    marginTop: 20,
     padding: 20,
     flexDirection: 'row',
     alignItems: 'center',

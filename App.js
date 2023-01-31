@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { SafeAreaView, StyleSheet, View, Text, TextInput, TouchableOpacity, FlatList } from 'react-native';
+import { SafeAreaView, StyleSheet, View, Text, TextInput, TouchableOpacity, FlatList, Alert } from 'react-native';
 
 
 export default function App() {
+  const [textInput, setTextInput] = useState('');
   const [tasks, setTasks] = useState([
     {
       id: 1,
@@ -31,17 +32,63 @@ export default function App() {
         </View>
         {
           !todo?.completed && (
-            <TouchableOpacity style={[styles.actionIcon]}>
+            <TouchableOpacity 
+              style={[styles.actionIcon]}
+              onPress={() => markTaskComplete(todo?.id)}
+              >
               <Icon name='done' size={20} color={Colors.white} />
             </TouchableOpacity>
           )
         }
-        <TouchableOpacity style={[styles.actionIcon, { backgroundColor: 'red' }]}>
+        <TouchableOpacity 
+          style={[styles.actionIcon, { backgroundColor: 'white' }]}
+          onPress={() => deleteTask(todo?.id)}
+        >
           <Icon name='delete' size={25} />
         </TouchableOpacity>
       </View>
     );
   };
+
+  const addTask = () => {
+    if (textInput === '') {
+      Alert.alert(
+        'Error',
+        'Please input Task'
+      );
+    }
+
+    else {
+      const newTask = {
+        id: Math.random(),
+        task: textInput,
+        completed: false,
+      };
+      setTasks([...tasks, newTask]);
+      setTextInput('');
+    }
+  };
+
+  const markTaskComplete = (taskId) => {
+    const newTasks = tasks.map((item) => {
+      if (item.id === taskId){
+        return {...item, completed: true}
+      }
+      else {
+        return item;
+      }
+    });
+    setTasks(newTasks);
+  };
+
+  const deleteTask = (taskId) => {
+    const newTasks = tasks.filter(item => item.id !== taskId);
+    setTasks(newTasks);
+  };
+
+  const clearTasks = () => {
+    setTasks([])
+  }
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: Colors.white }}>
@@ -49,7 +96,7 @@ export default function App() {
         <Text style={{ fontSize: 20, fontWeight: 'bold', color: Colors.primary }}>
           Unavailable App
         </Text>
-        <Icon name='delete' size={25} color='red' />
+        <Icon name='delete' size={25} color='red' onPress={clearTasks} />
       </View>
       <FlatList
         showsVerticalScrollIndicator={false}
@@ -59,9 +106,13 @@ export default function App() {
       />
       <View style={styles.footer}>
         <View style={styles.inputContainer}>
-          <TextInput placeholder='Add Task' style={{ textAlign: 'left', marginTop: 10 }} />
+          <TextInput
+            placeholder='Add Task'
+            style={{ textAlign: 'left', marginTop: 10 }}
+            value={textInput}
+            onChangeText={(text) => setTextInput(text)} />
         </View>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={addTask}>
           <View style={styles.iconContainer}>
             <Icon name='add' color={Colors.white} size={30} />
           </View>
